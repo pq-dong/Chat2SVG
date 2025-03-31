@@ -11,7 +11,7 @@ Chat2SVG is a framework for generating vector graphics using large language mode
 
 
 ## Updates
-- **[2024.03.31]**: We sincerely thank [pq-dong](https://github.com/pq-dong) for implementing a web demo for convenient use. Visit the [website](https://github.com/pq-dong/Chat2SVG) for more details. The web demo will be refined and updated in the future.
+- **[2025.03.31]**: We sincerely thank [pq-dong](https://github.com/pq-dong) for implementing a web demo for convenient use. Visit the [website](https://github.com/pq-dong/Chat2SVG) for more details. The web demo will be refined and updated in the future.
 ![web demo](./assets/web_demo.png)
 - [x] SVG template generation with Large Language Models
 - [x] Detail enhancement with image diffusion models
