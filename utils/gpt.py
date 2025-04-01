@@ -11,8 +11,6 @@ from utils.util import read
 # Create a .env file in the project root directory and add your Anthropic API key as ANTHROPIC_API_KEY=<your_key>
 load_dotenv(dotenv_path=os.path.join("..", ".env"))
 api_key = os.getenv("OPENAI_API_KEY")
-backend = os.getenv("BACKEND")
-assert backend in ["Claude", "Wildcard"], f"Invalid backend: {backend}. Choose either 'Claude' or 'Wildcard'."
 
 class Session:
     def __init__(self, model, prompts_file) -> None:
@@ -58,30 +56,17 @@ class Session:
     def _send(self, prompt: str, images: list[str]=[], file_path=None) -> str:
         payload = self._create_payload(prompt, images=images)
         if not os.path.exists(file_path):
-            # ANTROPICS
-            if backend == "Claude":
-                headers = {
-                    "Content-Type": "application/json",
-                    "x-api-key": api_key, 
-                    "anthropic-version": "2023-06-01" # TODO use if antropics
-                }
-                response = requests.post("https://api.anthropic.com/v1/messages", headers=headers, json=payload)  # Anthropic
-            # WILDCARD
-            elif backend == "Wildcard":   
-                headers = {
-                    "Content-Type": "application/json",
-                    "Authorization": f"Bearer {api_key}"
-                }
-                response = requests.post("https://api.gptsapi.net/v1/chat/completions", headers=headers, json=payload)  # WildCard
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {api_key}"
+            }
+            # response = requests.post("https://api.anthropic.com/v1/messages", headers=headers, json=payload)  # Anthropic
+            response = requests.post("https://api.gptsapi.net/v1/chat/completions", headers=headers, json=payload)  # WildCard
             try:
-                if backend == "Claude":
-                    response = response.json()['content'][0]['text']  # antropics
-                elif backend == "Wildcard":
-                    response = response.json()['choices'][0]['message']['content']
+                response = response.json()['choices'][0]['message']['content']
             except:
                 print(f"$ --- Error Response: {response.json()}\n")
         else:
-            print(f"$ --- Reading from file: {file_path}")
             response = read(file_path)
         self.past_messages.append({"role": "assistant", "content": response})
         self.past_responses.append(response)
@@ -102,7 +87,7 @@ class Session:
                 #     "url": base64_image,
                 #     "detail": "auto",
                 # }
-                # Claude / WildCard
+                # Claude
                 'type': 'image',
                 'source': {
                     'type': 'base64',
@@ -118,14 +103,12 @@ class Session:
         })
 
         self.past_messages.append(messages)
-        payload = {
+
+        return {
             "model": self.model,
             "system": self.predefined_prompts["system"],
             "messages": self.past_messages,
         }
-        if backend == "Claude":
-            payload["max_tokens"] = 3000
-        return payload
 
 
 def encode_image(image_path: str):
