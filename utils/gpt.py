@@ -124,7 +124,7 @@ class Session:
             "messages": self.past_messages,
         }
         if backend == "Claude":
-            payload["max_tokens"] = 3000
+            payload["max_tokens"] = 5000
         return payload
 
 

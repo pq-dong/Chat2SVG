@@ -11,7 +11,8 @@ Chat2SVG is a framework for generating vector graphics using large language mode
 
 
 ## Updates
-- **[2025.03.31]**: We sincerely thank [pq-dong](https://github.com/pq-dong) for implementing a web demo for convenient use. Visit the [website](https://github.com/pq-dong/Chat2SVG) for more details. The web demo will be refined and updated in the future.
+- **[2025.04.02]**: The official Anthropic APIs are now supported. You can configure this in the `.env` file. You can also adjust the `max_tokens` parameter in `utils/gpt.py` on line 127. Thanks to [@potpov](https://github.com/potpov)'s contribution.
+- **[2025.03.31]**: We sincerely thank [@pq-dong](https://github.com/pq-dong) for implementing a web demo for convenient use. Visit the [repository](https://github.com/pq-dong/Chat2SVG) for more details. The web demo will be refined and updated in the future.
 ![web demo](./assets/web_demo.png)
 - [x] SVG template generation with Large Language Models
 - [x] Detail enhancement with image diffusion models
