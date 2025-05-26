@@ -219,6 +219,149 @@ class SVGPolygon(SVGPolyline):
         return '<polygon {} points="{}"/>'.format(fill_attr, ' '.join([p.to_str() for p in self.points]))
 
 
+class SVGText(SVGPrimitive):
+    """
+    Represents an SVG <text> element for the deepsvg variant.
+    """
+    def __init__(self, x: float, y: float, text_content: str,
+                 font_size: Union[str, float] = "12px", font_family: str = "sans-serif",
+                 text_anchor: str = "start",
+                 # Text-specific visual properties
+                 text_fill_color: str = "black",  # The 'fill' attribute of <text>
+                 text_stroke_color: str = "none", # The 'stroke' attribute of <text>
+                 text_stroke_width: Union[str, float] = "0", # The 'stroke-width' of <text>
+                 opacity: float = 1.0,
+                 # Boolean flag for SVGPrimitive's fill logic
+                 # If True, SVGPrimitive.color (our text_fill_color) is used for fill.
+                 # If False, SVGPrimitive sets fill="none" and uses SVGPrimitive.color for stroke (less relevant for text's own stroke).
+                 is_filled: bool = True,
+                 *args, **kwargs):
+
+        # Pass text_fill_color as the main 'color' to SVGPrimitive.
+        # Pass is_filled as the 'fill' boolean flag to SVGPrimitive.
+        # SVGPrimitive's stroke_width is passed via kwargs if necessary, but text handles its own stroke.
+        super().__init__(color=text_fill_color, fill=is_filled, opacity=opacity, stroke_width=kwargs.pop("stroke_width", "0"), *args, **kwargs)
+
+        self.x = float(x)
+        self.y = float(y)
+        self.text_content = str(text_content)
+        self.font_size = str(font_size)
+        self.font_family = str(font_family)
+        self.text_anchor = str(text_anchor)
+
+        # Store text-specific stroke properties separately
+        self.text_stroke_color = text_stroke_color
+        self.text_stroke_width = str(text_stroke_width)
+        # self.opacity is handled by SVGPrimitive
+
+    def __repr__(self):
+        return f'SVGText(x={self.x}, y={self.y}, text="{self.text_content[:20]}...", fill="{self.color}", font_size="{self.font_size}")'
+
+    @classmethod
+    def from_xml(cls, x: minidom.Element):
+        # Text-specific attributes
+        pos_x = float(x.getAttribute("x") or 0.0)
+        pos_y = float(x.getAttribute("y") or 0.0)
+        font_size = x.getAttribute("font-size") or "12px"
+        font_family = x.getAttribute("font-family") or "sans-serif"
+        text_anchor = x.getAttribute("text-anchor") or "start"
+
+        # Visual attributes for text
+        text_fill = x.getAttribute("fill")
+        is_filled_flag = True
+        if text_fill == "none":
+            is_filled_flag = False
+            actual_text_fill_color = "black" # Default if fill is "none", though it won't be shown
+        elif not text_fill: # Empty or not present
+            actual_text_fill_color = "black" # SVG default fill
+        else:
+            actual_text_fill_color = text_fill
+
+        text_stroke = x.getAttribute("stroke") or "none"
+        text_stroke_w = x.getAttribute("stroke-width") or "0"
+        
+        parsed_opacity = float(x.getAttribute("opacity") or 1.0)
+        # id_attr = x.getAttribute("id") # SVGPrimitive doesn't store id by default
+
+        text_content = ""
+        if x.firstChild and x.firstChild.nodeType == x.firstChild.TEXT_NODE:
+            text_content = x.firstChild.data.strip()
+        # TODO: Consider tspan elements for more complex text structures if needed
+
+        return cls(x=pos_x, y=pos_y, text_content=text_content,
+                   font_size=font_size, font_family=font_family,
+                   text_anchor=text_anchor,
+                   text_fill_color=actual_text_fill_color,
+                   text_stroke_color=text_stroke,
+                   text_stroke_width=text_stroke_w,
+                   opacity=parsed_opacity,
+                   is_filled=is_filled_flag)
+
+    def to_str(self, *args, **kwargs):
+        attrs = []
+        # Basic position and content
+        attrs.append(f'x="{self.x}"')
+        attrs.append(f'y="{self.y}"')
+
+        # Text styling attributes
+        if self.font_size: attrs.append(f'font-size="{self.font_size}"')
+        if self.font_family: attrs.append(f'font-family="{self.font_family}"')
+        if self.text_anchor: attrs.append(f'text-anchor="{self.text_anchor}"')
+
+        # Fill attribute for text (from SVGPrimitive.color)
+        if self.fill: # self.fill is the boolean flag from SVGPrimitive
+            attrs.append(f'fill="{self.color}"')
+        else:
+            attrs.append(f'fill="none"')
+        
+        # Opacity for fill (from SVGPrimitive.opacity)
+        if self.opacity is not None and self.opacity != 1.0:
+             attrs.append(f'fill-opacity="{self.opacity}"')
+
+
+        # Text-specific stroke attributes
+        if self.text_stroke_color and self.text_stroke_color != "none":
+            attrs.append(f'stroke="{self.text_stroke_color}"')
+            attrs.append(f'stroke-width="{self.text_stroke_width}"')
+            # Add stroke-opacity if it needs to be different from fill-opacity
+            # For now, assume stroke-opacity can also use self.opacity if needed, or be explicit
+            if self.opacity is not None and self.opacity != 1.0: # Common case
+                attrs.append(f'stroke-opacity="{self.opacity}"')
+        else:
+            attrs.append(f'stroke="none"')
+
+
+        # Other SVGPrimitive attributes like dasharray are not typically used for <text>
+        # but _get_fill_attr() from parent might add them if self.fill is False.
+        # Here, we are manually constructing, so we only add what's relevant for <text>.
+
+        return f'<text {" ".join(attrs)}>{self.text_content}</text>'
+
+    def copy(self):
+        return SVGText(x=self.x, y=self.y, text_content=self.text_content,
+                       font_size=self.font_size, font_family=self.font_family,
+                       text_anchor=self.text_anchor,
+                       text_fill_color=self.color, # self.color in SVGPrimitive stores the fill color
+                       text_stroke_color=self.text_stroke_color,
+                       text_stroke_width=self.text_stroke_width,
+                       opacity=self.opacity,
+                       is_filled=self.fill) # self.fill in SVGPrimitive is the boolean flag
+
+    def to_path(self):
+        # Text-to-path conversion is complex and requires font metrics.
+        raise NotImplementedError("SVGText.to_path() is not implemented for deepsvg variant.")
+
+    def bbox(self):
+        # Accurate bbox for text is complex without rendering.
+        # Returning a zero-size bbox at the (x,y) position.
+        return Bbox(self.x, self.y, self.x, self.y)
+
+    # fill_ method is inherited from SVGPrimitive.
+    # It sets self.fill (boolean flag) and returns self.
+    # For SVGText, this flag determines if fill="none" is used.
+    # The actual fill color is self.color (from SVGPrimitive).
+
+
 class SVGPathGroup(SVGPrimitive):
     def __init__(self, svg_paths: List[SVGPath] = None, origin=None, *args, **kwargs):
         super().__init__(*args, **kwargs)

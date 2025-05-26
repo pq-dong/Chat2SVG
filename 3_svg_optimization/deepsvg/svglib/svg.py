@@ -17,7 +17,7 @@ Num = Union[int, float]
 
 from .svg_command import SVGCommandBezier
 from .svg_path import SVGPath, Filling, Orientation
-from .svg_primitive import SVGPathGroup, SVGRectangle, SVGCircle, SVGEllipse, SVGLine, SVGPolyline, SVGPolygon
+from .svg_primitive import SVGPathGroup, SVGRectangle, SVGCircle, SVGEllipse, SVGLine, SVGPolyline, SVGPolygon, SVGText
 from .geom import union_bbox
 
 
@@ -136,7 +136,8 @@ class SVG:
             "rect": SVGRectangle,
             "circle": SVGCircle, "ellipse": SVGEllipse,
             "line": SVGLine,
-            "polyline": SVGPolyline, "polygon": SVGPolygon
+            "polyline": SVGPolyline, "polygon": SVGPolygon,
+            "text": SVGText
         }
 
         for tag, Primitive in primitives.items():

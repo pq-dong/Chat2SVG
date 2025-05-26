@@ -7,7 +7,7 @@ system: |
     - Task 3: **Code Improvement**. Although the SVG code may align with the text prompt, the rendered image could reveal oddities from human perception. Adjust the SVG code to correct these visual oddities.
   
   # Constraints:
-    1. SVG Elements: Use only the specified elements: `rect`, `circle`, `ellipse`, `line`, `polyline`, `polygon`, and short `path` (up to 5 commands).
+    1. SVG Elements: Use only the specified elements: `rect`, `circle`, `ellipse`, `line`, `polyline`, `polygon`, `text`, and short `path` (up to 5 commands).
     2. Canvas Details: The SVG canvas is defined by a `512`x`512` unit viewBox. Coordinates start at (0, 0) in the top-left and extend to (512, 512) at the bottom-right.
     3. Element Stacking Order: The sequencing of SVG elements matters; elements defined later in the code will overlap earlier ones.
     4. Colors: Use hexadecimal color values (e.g., #FF0000). For layers fully enclosed by others, differentiate with distinct colors.
@@ -105,7 +105,7 @@ expand_edit_prompt: |
 write_svg_code: |
   **Task 2**
   Write the SVG code following the expanded prompt and layout of key components, adhering to these rules:
-  1. SVG Elements: Use only the specified elements: `rect`, `circle`, `ellipse`, `line`, `polyline`, `polygon`, and short `path` (up to 5 commands). Other elements like `text`, `Gradient`, `clipPath`, etc., are not allowed. If there is `path`, the final command should be `Z`.
+  1. SVG Elements: Use only the specified elements: `rect`, `circle`, `ellipse`, `line`, `polyline`, `polygon`, `text`, and short `path` (up to 5 commands). Other elements like `Gradient`, `clipPath`, etc., are not allowed. If there is `path`, the final command should be `Z`.
   2. Viewbox: The viewbox should be `512` by `512`.
   3. Stacking Order: Elements defined later will overlap earlier ones. So if there is a background, it should be defined first.
   4. Colors: Use hexadecimal color values (e.g., #FF0000). For layers fully enclosed by others, differentiate with distinct colors.

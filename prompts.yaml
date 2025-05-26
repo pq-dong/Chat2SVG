@@ -1,5 +1,5 @@
 system: |
-  You are a vector graphics designer tasked with creating Scalable Vector Graphics (SVG) from a given text prompt.
+  You are an educational content designer tasked with creating Scalable Vector Graphics (SVG) to explain knowledge points for primary and secondary school students. Your goal is to make concepts visually engaging and easy to understand.
 
   # Your tasks:
     - Task 1: **Expand Text Prompt**. The provided prompt is simple, concise and abstract. The first task is imagining what will appear in the image, making it more detailed.
@@ -7,7 +7,7 @@ system: |
     - Task 3: **Code Improvement**. Although the SVG code may align with the text prompt, the rendered image could reveal oddities from human perception. Adjust the SVG code to correct these visual oddities.
   
   # Constraints:
-    1. SVG Elements: Use only the specified elements: `rect`, `circle`, `ellipse`, `line`, `polyline`, `polygon`, and short `path` (up to 5 commands).
+    1. SVG Elements: Use only the specified elements: `rect`, `circle`, `ellipse`, `line`, `polyline`, `polygon`, `text`, and short `path` (up to 5 commands).
     2. Canvas Details: The SVG canvas is defined by a `512`x`512` unit viewBox. Coordinates start at (0, 0) in the top-left and extend to (512, 512) at the bottom-right.
     3. Element Stacking Order: The sequencing of SVG elements matters; elements defined later in the code will overlap earlier ones.
     4. Colors: Use hexadecimal color values (e.g., #FF0000). For layers fully enclosed by others, differentiate with distinct colors.
@@ -28,44 +28,50 @@ expand_text_prompt: |
   2. When add details to describe objects (Step 2.1), the description can be detailed and vivid, but the language should be clear and concise. Avoid overly complex or ambiguous descriptions.
   3. When breaking down objects into individual components (Step 2.2), ensure you list all essential parts typically comprising that object, even if they are not explicitly mentioned in the initial object description.
 
-  # A Unicorn Text Expansion Example:
-    - The Provided Text Prompt: "A unicorn is eating a carrot."
+  # A Gravity Explanation Text Expansion Example:
+    - The Provided Text Prompt: "Explain gravity with a falling apple and Newton's formula."
 
     - Expanded Prompt:
       ###
       Scene Description:
-      "The pink unicorn is standing in side view. The unicorn's mouth is open, bitting an orange carrot."
+      "A green apple is shown falling from a stylized tree towards the ground. The formula for gravitational force, F=mg, is displayed clearly next to the scene. The overall style should be simple and educational."
 
       Object Detail:
-      # Object 1 (Unicorn): The unicorn, standing in side view, has a pink body and a yellow horn. Its brown tail swings, while its four legs stand still. It has a pink head and a small black eye.
-      # Object 2 (Carrot): The carrot is orange with two green leaves at the top.
+      # Object 1 (Tree): A simple tree with a brown trunk and a green canopy. One apple is detaching or has just detached from a branch.
+      # Object 2 (Falling Apple): A round, green apple, depicted in mid-air, below the tree branch and above the ground. Motion lines could suggest its downward movement.
+      # Object 3 (Ground): A simple horizontal line or a slight curve representing the ground.
+      # Object 4 (Formula): The text "F=mg" displayed clearly and legibly.
 
       Component Breakdown:
-      # Object 1 (Unicorn): horizontal pink body (ellipse), pink head (ellipse), thin neck (rectangle), four vertical legs (rectangles), brown curved tail (polyline), yello triangle horn atop the head (polygon), round eye (circle), mouth on the head (path)
-      # Object 2 (Carrot): elongated orange triangle body (triangle), two small green triangular leaves (triangle)
+      # Object 1 (Tree): brown trunk (rectangle), green canopy (multiple overlapping circles or a large ellipse), a small branch (line or thin rectangle).
+      # Object 2 (Falling Apple): green apple body (circle), small stem (line). Optional: motion lines (polylines).
+      # Object 3 (Ground): a horizontal line spanning part of the canvas width (line).
+      # Object 4 (Formula): The text "F=mg" (text element).
 
       Key Components Layout:
-      # Object 1: Unicorn
-      1. Body: An ellipse centered around (256, 256) with rx=90 and ry=60. The body is pink.
-      2. Head: An ellipse centered at (342, 166), 30 units wide and 25 units high, oriented to suggest the unicorn's gaze forward.
-      3. Neck: A rectangle, 50 units long and 10 units wide, positioned at (312, 168) connecting the head and the body.
-      4. Legs: Four rectangles, each 10 units wide and 80 units tall, positioned at (185, 296), (220, 311), (293, 307), and (316, 296) to suggest stability.
-      5. Tail: A polyline starting from the back of the body ellipse at (168, 258) and curving to points (122, 298) and (142, 252) to suggest a flowing tail.
-      6. Horn: A polygon with points at (331, 140), (336, 110), and (341, 140) to represent the unicorn's triangular horn. The horn is yellow.
-      7. Eye: A small circle with a radius of 5 units, placed at (352, 164) on the head.
-      8. Mouth: A small curved line positioned at (342, 178) on the head
+      # Object 1: Tree
+      1. Trunk: A brown rectangle, e.g., x="100" y="250" width="40" height="150".
+      2. Canopy: A large green ellipse centered above the trunk, e.g., cx="120" cy="180" rx="80" ry="70".
+      3. Branch: A thin brown line extending from the canopy, e.g., x1="120" y1="180" x2="180" y2="200".
 
-      # Object 2: Carrot
-      1. Body: An elongated triangle with points at (369, 180), (348, 200), and (356, 172). The carrot body is orange (#FFA500).
-      2. Leaves: Two small triangles positioned at the top of the carrot body, centered around (363, 174). The leaves are green (#00FF00).
+      # Object 2: Falling Apple
+      1. Apple Body: A green circle, e.g., cx="180" cy="240" r="15".
+      2. Stem: A small brown line attached to the apple, e.g., x1="180" y1="225" x2="180" y2="220".
+      3. Motion Lines (Optional): Light grey polylines above the apple, e.g., points="170,210 175,220 180,210" and "185,210 190,220 195,210".
+
+      # Object 3: Ground
+      1. Ground Line: A dark green line, e.g., x1="0" y1="400" x2="512" y2="400", stroke-width="2".
+
+      # Object 4: Formula
+      1. Text: The string "F=mg", black, positioned to the right of the tree, e.g., x="300" y="150", font-size="24px", font-family="Arial", text-anchor="start".
       ###
   
-  Refer to the Unicorn Example for response guidance and formatting. Avoiding any unnecessary dialogue in your response.
+  Refer to the Gravity Explanation Example for response guidance and formatting. Avoiding any unnecessary dialogue in your response.
   Here is the text prompt: "<TEXT_PROMPT>"
 write_svg_code: |
   **Task 2**
   Write the SVG code following the expanded prompt and layout of key components, adhering to these rules:
-  1. SVG Elements: Use only the specified elements: `rect`, `circle`, `ellipse`, `line`, `polyline`, `polygon`, and short `path` (up to 5 commands). Other elements like `text`, `Gradient`, `clipPath`, etc., are not allowed. If there is `path`, the final command should be `Z`. If a path only contains a single command, you need to increase the `stroke-width` to make it visible.
+  1. SVG Elements: Use only the specified elements: `rect`, `circle`, `ellipse`, `line`, `polyline`, `polygon`, `text`, and short `path` (up to 5 commands). Other elements like `Gradient`, `clipPath`, etc., are not allowed. If there is `path`, the final command should be `Z`. If a path only contains a single command, you need to increase the `stroke-width` to make it visible.
   2. Viewbox: The viewbox should be `512` by `512`.
   3. Stacking Order: Elements defined later will overlap earlier ones. So if there is a background, it should be defined first.
   4. Colors: Use hexadecimal color values (e.g., #FF0000). For layers fully enclosed by others, differentiate with distinct colors.
@@ -75,47 +81,38 @@ write_svg_code: |
   A translation from the expanded prompt to SVG code is provided below:
   ###
   - Expanded Prompt:
-    # Object 1: Unicorn
-    1. Body: An ellipse centered around (256, 256) with rx=90 and ry=60. The body is pink.
-    2. Head: An ellipse centered at (342, 166), 30 units wide and 25 units high, oriented to suggest the unicorn's gaze forward.
-    3. Neck: A rectangle, 50 units long and 10 units wide, positioned at (312, 168) connecting the head and the body.
-    4. Legs: Four rectangles, each 10 units wide and 80 units tall, positioned at (185, 296), (220, 311), (293, 307), and (316, 296) to suggest stability.
-    5. Tail: A polyline starting from the back of the body ellipse at (168, 258) and curving to points (122, 298) and (142, 252) to suggest a flowing tail.
-    6. Horn: A polygon with points at (331, 140), (336, 110), and (341, 140) to represent the unicorn's triangular horn. The horn is yellow.
-    7. Eye: A small circle with a radius of 5 units, placed at (352, 164) on the head.
-    8. Mouth: A small curved line positioned at (342, 178) on the head
+    # Object 1: Tree
+    1. Trunk: A brown rectangle, e.g., x="100" y="250" width="40" height="150".
+    2. Canopy: A large green ellipse centered above the trunk, e.g., cx="120" cy="180" rx="80" ry="70".
+    3. Branch: A thin brown line extending from the canopy, e.g., x1="120" y1="180" x2="180" y2="200".
 
-    # Object 2: Carrot
-    1. Body: An elongated triangle with points at (369, 180), (348, 200), and (356, 172). The carrot body is orange (#FFA500).
-    2. Leaves: Two small triangles positioned at the top of the carrot body, centered around (363, 174). The leaves are green (#00FF00).
+    # Object 2: Falling Apple
+    1. Apple Body: A green circle, e.g., cx="180" cy="240" r="15".
+    2. Stem: A small brown line attached to the apple, e.g., x1="180" y1="225" x2="180" y2="220".
+
+    # Object 3: Ground
+    1. Ground Line: A dark green line, e.g., x1="0" y1="400" x2="512" y2="400", stroke-width="2".
+
+    # Object 4: Formula
+    1. Text: The string "F=mg", black, positioned to the right of the tree, e.g., x="300" y="150", font-size="24px", font-family="Arial", text-anchor="start".
 
   - Translated SVG code:
     ```svg
     <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-      <!-- Body -->
-      <ellipse id="path_1" cx="256" cy="256" rx="90" ry="60" fill="#ffc0cb"/>
-      <!-- Legs -->
-      <rect id="path_2" x="185" y="296" width="10" height="80" fill="#d3d3d3"/>
-      <rect id="path_3" x="220" y="311" width="10" height="80" fill="#d3d3d3"/>
-      <rect id="path_4" x="293" y="307" width="10" height="80" fill="#d3d3d3"/>
-      <rect id="path_5" x="316" y="296" width="10" height="80" fill="#d3d3d3"/>
-      <!-- Neck -->
-      <rect id="path_6" x="312" y="168" width="10" height="50" fill="#ffc0cb"/>
-      <!-- Head -->
-      <ellipse id="path_7" cx="342" cy="166" rx="30" ry="25" fill="#ffc0cb"/>
-      <!-- Eye -->
-      <circle id="path_8" cx="352" cy="164" r="5" fill="#000000"/>
-      <!-- Tail -->
-      <polyline id="path_9" points="168,258 122,298 142,252" fill="none" stroke="#a52a2a" stroke-width="8"/>
-      <!-- Horn -->
-      <polygon id="path_10" points="331,140 336,110 341,140" fill="#ffff00"/>
-      <!-- Unicorn mouth -->
-      <path id="path_11" d="M 337 178 Q 342 183 347 178" fill="none" stroke="#000000" stroke-width="2"/>
-      <!-- Carrot body -->
-      <polygon id="path_12" points="369 180 348 200 356 172 369 180" fill="#ffa500"/>
-      <!-- Carrot leaves -->
-      <polygon id="path_13" points="363 174 364 163 373 168 363 174" fill="#00ff00"/>
-      <polygon id="path_14" points="363 174 356 166 375 173 363 174" fill="#00ff00"/>
+      <!-- Ground -->
+      <line id="path_1" x1="0" y1="400" x2="512" y2="400" stroke="#006400" stroke-width="2"/>
+      <!-- Tree Trunk -->
+      <rect id="path_2" x="100" y="250" width="40" height="150" fill="#8B4513"/>
+      <!-- Tree Canopy -->
+      <ellipse id="path_3" cx="120" cy="180" rx="80" ry="70" fill="#228B22"/>
+      <!-- Tree Branch -->
+      <line id="path_4" x1="120" y1="180" x2="180" y2="200" stroke="#8B4513" stroke-width="5"/>
+      <!-- Falling Apple Body -->
+      <circle id="path_5" cx="180" cy="240" r="15" fill="#008000"/>
+      <!-- Apple Stem -->
+      <line id="path_6" x1="180" y1="225" x2="180" y2="220" stroke="#A0522D" stroke-width="2"/>
+      <!-- Gravity Formula -->
+      <text id="path_7" x="300" y="150" font-family="Arial" font-size="24px" fill="#000000" text-anchor="start">F=mg</text>
     </svg>
     ```
   ###
